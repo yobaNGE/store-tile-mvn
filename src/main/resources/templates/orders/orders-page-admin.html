@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление заказами</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{header.html :: header}"></div>
+<div class="container mt-4" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <h1 class="text-center mb-4">Управление заказами</h1>
+
+    <form class="mb-4" th:action="@{/orders/admin}" method="get">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <select class="form-select" name="status">
+                    <option value="" th:selected="${selectedStatus == null}">Все статусы</option>
+                    <option th:each="status : ${statuses}"
+                            th:value="${status}"
+                            th:text="${status}"
+                            th:selected="${selectedStatus == status}"></option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Применить</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Orders Table -->
+    <div th:if="${orders.isEmpty()}">
+        <p class="text-center">Заказы отсутствуют.</p>
+    </div>
+
+    <table class="table table-bordered" th:if="${!orders.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Пользователь</th>
+            <th>Дата заказа</th>
+            <th>Статус</th>
+            <th>Итого</th>
+            <th sec:authorize="hasRole('ADMIN')">Действия</th >
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.id}"></td>
+            <td th:text="${order.userDTO.username}"></td>
+            <td th:text="${#temporals.format(order.orderDate, 'dd.MM.yyyy HH:mm')}"></td>
+            <td th:text="${order.status}"></td>
+            <td th:text="${order.totalPrice} + ' ₽'"></td>
+            <td sec:authorize="hasRole('ADMIN')">
+                <form th:action="@{/orders/admin/status/{orderId}(orderId=${order.id})}" method="post">
+                    <select class="form-select form-select-sm mb-2" name="status">
+                        <option th:each="status : ${statuses}" th:value="${status}" th:text="${status}" th:selected="${status == order.status}"></option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-success">Обновить</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

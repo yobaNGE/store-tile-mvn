@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{header.html :: header}"></div>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Корзина</h1>
+
+    <!-- If Cart is Empty -->
+    <div th:if="${cart.items.isEmpty()}">
+        <p class="text-center">Корзина пуста.</p>
+    </div>
+
+    <!-- If Cart has Items -->
+    <div th:if="${!cart.items.isEmpty()}">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Название</th>
+                <th>Количество</th>
+                <th>Цена</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${cart.items}">
+                <!-- Item Details -->
+                <td th:text="${item.tile.name}"></td>
+
+                <!-- Quantity Update Form -->
+                <td>
+                    <form th:action="@{/cart/update}" method="post" class="d-flex align-items-center">
+                        <input type="hidden" name="tileId" th:value="${item.tile.id}">
+                        <input type="number" name="quantity" th:value="${item.quantity}" min="1" class="form-control me-2" style="width: 80px;">
+                        <button type="submit" class="btn btn-info btn-sm">Обновить</button>
+                    </form>
+                </td>
+
+                <!-- Price Calculation -->
+                <td th:text="${item.tile.price * item.quantity} + ' ₽'"></td>
+
+                <!-- Remove Item Form -->
+                <td>
+                    <form th:action="@{/cart/remove}" method="post">
+                        <input type="hidden" name="tileId" th:value="${item.tile.id}">
+                        <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Total Price and Clear Cart -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <h5>Итого: <span th:text="${cart.totalPrice}"></span> ₽</h5>
+            <div>
+                <form th:action="@{/cart/clear}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-warning">Очистить корзину</button>
+                </form>
+                <form th:action="@{/orders/create}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-success ms-2">Оформить заказ</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
