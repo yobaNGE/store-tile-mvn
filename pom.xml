@@ -88,6 +88,11 @@
             <groupId>org.thymeleaf.extras</groupId>
             <artifactId>thymeleaf-extras-springsecurity6</artifactId>
         </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>8.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -95,6 +100,17 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <image>
+                        <name>food-root-servir:latest</name>
+                        <createdDate>now</createdDate>
+                        <env>
+                            <SPRING_PROFILES_ACTIVE>prod</SPRING_PROFILES_ACTIVE>
+                            <CREATED_DATE>${maven.build.timestamp}</CREATED_DATE>
+                        </env>
+
+                    </image>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -1,6 +1,7 @@
 package org.chiches.storecherepitsamvn.config;
 
 import org.chiches.storecherepitsamvn.repository.UserRepository;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,9 +32,32 @@ public class AppSecurityConfiguration {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/favicon.ico").permitAll()
-                        .requestMatchers("/", "/auth/login", "/auth/register", "/auth/login-error").permitAll()
+
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+
+                        .requestMatchers(
+                                "/",
+                                "/auth/login",
+                                "/auth/login-error",
+                                "/auth/register",
+                                "/css/**",
+                                "/js/**"
+                        ).permitAll()
+
+                        .requestMatchers("/orders/admin/**").hasRole("ADMIN")
+
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("user/**").hasRole("USER")
+
+                        .requestMatchers("/tiles/create", "/tiles/update/**").hasAnyRole("STAFF", "ADMIN")
+
+                        .requestMatchers("/tile-categories/**").hasAnyRole("STAFF", "ADMIN")
+
+                        .requestMatchers("/cart/**").hasAnyRole("USER", "STAFF", "ADMIN")
+
+                        .requestMatchers("/catalogue/**").hasAnyRole("USER", "STAFF", "ADMIN")
+
+                        .requestMatchers("/orders").hasAnyRole("USER", "STAFF", "ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .formLogin(

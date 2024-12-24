@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class AuthControllerImpl implements AuthController {
@@ -57,5 +58,12 @@ public class AuthControllerImpl implements AuthController {
     @Override
     public String logoutConfirmation(Model model) {
         return "auth/logout-confirm";
+    }
+
+    @Override
+    public String onFailedLogin(String username, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("username", username);
+        redirectAttributes.addFlashAttribute("badCredentials", true);
+        return "redirect:/auth/login";
     }
 }

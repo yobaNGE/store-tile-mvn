@@ -4,6 +4,7 @@ import org.chiches.storecherepitsacontracs.dto.user.UserForm;
 import org.chiches.storecherepitsamvn.entity.RoleEntity;
 import org.chiches.storecherepitsamvn.entity.UserEntity;
 import org.chiches.storecherepitsamvn.entity.consts.Roles;
+import org.chiches.storecherepitsamvn.exeptions.RoleNotFoundException;
 import org.chiches.storecherepitsamvn.repository.RoleRepository;
 import org.chiches.storecherepitsamvn.repository.UserRepository;
 import org.chiches.storecherepitsamvn.service.AuthService;
@@ -43,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
         user.setSurname(form.surname());
 
         RoleEntity userRole = roleRepository.findByRole(Roles.USER)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new RoleNotFoundException("Role " + Roles.USER +" not found"));
         user.setRoles(List.of(userRole));
 
         userRepository.save(user);
